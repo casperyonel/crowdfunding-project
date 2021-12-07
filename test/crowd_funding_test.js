@@ -115,4 +115,50 @@ contract('CrowdFundingWithDeadline', function(accounts) {
         expect(state.valueOf()).to.equal(FAILED_STATE);
     });
 
+    it('collected money paid out', async function() {
+        await contract.contribute({
+            value: ONE_ETH,
+            from: contractCreator
+        });
+        await contract.setCurrentTime(601);
+        await contract.finishCrowdFunding();
+
+        let initAmount = await web3.eth.getBalance(beneficiary);
+        await contract.collect({
+            from: contractCreator
+        });
+
+        let newBalance = await web3.eth.getBalance(beneficiary);
+        expect(newBalance - initAmount).to.equal(ONE_ETH); // Because we contributed one eth above in another test. 
+
+        let fundingState = await contract.state.call();
+        expect(fundingState.valueOf()).to.equal(PAID_OUT_STATE);
+    });
+
+    it('withdraw funds from the contract', async function() {
+        await contract.contribute({
+            value: ONE_ETH - 100,
+            from: contractCreator
+        });
+        await contract.setCurrentTime(601);
+        await contract.finishCrowdFunding();
+
+        await contract.withdraw({
+            from: contractCreator
+        });
+
+        let amount = await contract.amounts.call(contractCreator)
+        expect(amount.toNumber()).to.equal(0)
+    });
+
+    it('event is emitted', async function() {
+        let watcher = contract.CampaignFinished(); // Start listening for event
+        await contract.setCurrentTime(601);
+        await contract.finishCrowdFunding(); // Finish the crowdfunding while we're listening.
+
+        let events = await watcher.get(); // Get method
+        let event = events[0];
+        expect(event.args.totalCollected.toNumber()).to.equal(0); // TotalCollected amount is 0 since we contributed no funds. 
+        expect(event.args.succeeded).to.equal(false); // This campaign has failed. 
+    });
 });
