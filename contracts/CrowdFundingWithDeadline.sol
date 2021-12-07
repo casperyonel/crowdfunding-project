@@ -30,7 +30,7 @@ contract CrowdFundingWithDeadline {
     }
 
     function currentTime() internal view returns(uint) {
-        return block.timestamp; 
+        return block.timestamp;
         // returns the curent block time with the Now alias
     }
 }

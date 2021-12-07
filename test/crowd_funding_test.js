@@ -23,8 +23,9 @@ contract('CrowdFundingWithDeadline', function(accounts) {
             'funding', // name of campaign / contract
             1, // amount of ether needed to fund campaigns
             10, // time duration in minutes
+            beneficiary,
             {
-                from: contractCreator, // address to deploy contract
+                from: contractCreator, // address to deploy contract, which we're using function(accounts) because it's generated with truffle. 
                 gas: 2000000 // gas to spend for deployment transaction
             }
             /* 
@@ -34,7 +35,7 @@ contract('CrowdFundingWithDeadline', function(accounts) {
                 uint durationInMin, 
                 address beneficiaryAddress    
             */ 
-        );
+        )
     });
 
     it('contract is initialized', async function() {
@@ -42,7 +43,7 @@ contract('CrowdFundingWithDeadline', function(accounts) {
         expect(campaignName).to.equal('funding');
     
         let targetAmount = await contract.targetAmount.call()
-        expect(targetAmount.toNumber().to.equal(ONE_ETH))
+        expect(targetAmount.toNumber()).to.equal(ONE_ETH)
         // Above is converting the result into a JS number which is what the smart contract will return to us
         // Our contract was initialized to take in Eth, not wei, so our ONE_ETH is normalized that. 
 
