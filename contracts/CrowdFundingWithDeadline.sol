@@ -12,17 +12,16 @@ contract CrowdFundingWithDeadline {
     State public state;
 
     constructor(
-        // initializing the smart contract, can only be done once
-        string contractName,
+        // initializing the smart contract, can only be executed once, is optional
+        string memory contractName,
         uint targetAmountETH,
         uint durationInMin, 
-        address beneficiaryAddress    
+        address beneficiaryAddress
     )
-    public
     {
-        name = contractName;
+        name = contractName; // so now can do contract.name.call() in testing to access this which was initialized in the constructor
         targetAmount = targetAmountETH * 1 ether;
-        // converts to Wei
+        // converts to Wei from Eth
         fundingDeadline = currentTime() + durationInMin * 1 minutes;
         // converts to seconds
         beneficiary = beneficiaryAddress;
@@ -31,7 +30,7 @@ contract CrowdFundingWithDeadline {
     }
 
     function currentTime() internal view returns(uint) {
-        return now; 
+        return block.timestamp; 
         // returns the curent block time with the Now alias
     }
 }
