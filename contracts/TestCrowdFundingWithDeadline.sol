@@ -19,7 +19,7 @@ contract TestCrowdFundingWithDeadline is CrowdFundingWithDeadline {
 
     function currentTime() internal view returns(uint) {
         // View means just for viewing purposes, doesn't change anything. 
-        // Internal because only this contract can call on currentTime()
+        // Internal because only this contract can call on currentTime(), or parent. vs. private which means ONLY this contract. 
         // Smart contract relies on this method to get the current time
         return time;
     }
